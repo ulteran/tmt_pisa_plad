@@ -1,0 +1,150 @@
+---
+title: "tmt_data_analysis"
+author: "A.G."
+date: "2023-07-28"
+output: html_document
+---
+
+#----
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+#---- START
+
+```{r echo=FALSE}
+library(MSstatsTMT)
+library(tidyverse)
+library(ggrepel)
+library(ggthemes)
+library(ggVennDiagram)
+library(eulerr)
+```
+
+```{r}
+proteinGroups <- read.table(
+  "data/maxquant_tmt_std/proteinGroups.txt", sep="\t", header=TRUE
+)
+
+evidence <- read.table(
+  "data/maxquant_tmt_std/evidence.txt", sep="\t", header=TRUE
+)
+
+annotation <- read.csv(
+  "data/maxquant_tmt_std/annotation.csv", header=TRUE
+)
+
+evidence$Proteins <- evidence$Gene.names
+
+```
+
+```{r}
+proteinGroups_SF3B1 <- proteinGroups %>% 
+  dplyr::filter(
+    Gene.names == "SF3B1"
+  )
+
+evidence_SF3B1 <- evidence %>% 
+  dplyr::filter(
+    Gene.names == "SF3B1"
+  )
+```
+
+```{r}
+proteinGroups_missing <- proteinGroups %>%
+  filter_at(vars(46:61), any_vars(. == 0))
+
+proteinGroups_missing %>% 
+  dplyr::select(c(1, 46:61)) %>% 
+  tidyr::pivot_longer(cols=2:17, names_to="Channel", values_to="Intensity") %>% 
+  ggplot(aes(x=Channel, y=Protein.IDs, fill=Intensity)) +
+  geom_tile() +
+  theme(
+    axis.text.x=element_blank(), #remove x axis labels
+    axis.ticks.x=element_blank(), #remove x axis ticks
+    axis.text.y=element_blank(),  #remove y axis labels
+    axis.ticks.y=element_blank()
+  )
+
+proteinGroups_missing <- proteinGroups %>%
+  filter_at(vars(46:61), any_vars(. == 0)) %>% 
+  filter_at(vars(46:61), any_vars(. != 0))
+
+proteinGroups_missing %>% 
+  dplyr::select(c(1, 46:61)) %>% 
+  tidyr::pivot_longer(cols=2:17, names_to="Channel", values_to="Intensity") %>% 
+  ggplot(aes(x=Channel, y=Protein.IDs, fill=Intensity)) +
+  geom_tile() +
+  theme(
+    axis.text.x=element_blank(), #remove x axis labels
+    axis.ticks.x=element_blank(), #remove x axis ticks
+#    axis.text.y=element_blank(),  #remove y axis labels
+#    axis.ticks.y=element_blank()
+  )
+```
+
+```{r}
+evidence_missing <- evidence %>%
+  filter_at(vars(58:73), any_vars(. == 0))
+
+evidence_missing %>% 
+  dplyr::select(c(13, 58:73)) %>% 
+  tidyr::pivot_longer(cols=2:17, names_to="Channel", values_to="Intensity") %>% 
+  ggplot(aes(x=Channel, y=Proteins, fill=Intensity)) +
+  geom_tile() +
+  theme(
+    axis.text.x=element_blank(), #remove x axis labels
+    axis.ticks.x=element_blank(), #remove x axis ticks
+    axis.text.y=element_blank(),  #remove y axis labels
+    axis.ticks.y=element_blank()
+  )
+
+evidence_missing <- evidence %>%
+  filter_at(vars(58:73), any_vars(. == 0)) %>% 
+  filter_at(vars(58:73), any_vars(. != 0))
+
+evidence_missing %>% 
+  dplyr::select(c(13, 58:73)) %>% 
+  tidyr::pivot_longer(cols=2:17, names_to="Channel", values_to="Intensity") %>% 
+  ggplot(aes(x=Channel, y=Proteins, fill=log10(Intensity))) +
+  geom_tile() +
+  theme(
+    axis.text.x=element_blank(), #remove x axis labels
+    axis.ticks.x=element_blank(), #remove x axis ticks
+    axis.text.y=element_blank(),  #remove y axis labels
+    axis.ticks.y=element_blank()
+  )
+```
+```{r}
+evidence_missing <- evidence %>%
+  filter_at(vars(58:73), any_vars(. == 0)) %>% 
+  filter_at(vars(58:73), any_vars(. != 0)) %>% 
+  mutate_at(vars(58:73), ~ifelse(. == 0, 10, .))
+
+evidence_filtered <- evidence %>% 
+  filter_at(vars(58:73), any_vars(. != 0))
+
+peptides <- list(w=peptides_w$Sequence, wo=peptides_wo$Sequence)
+```
+

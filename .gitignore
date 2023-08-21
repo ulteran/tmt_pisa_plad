@@ -47,3 +47,9 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# raw data folder
+data/
+
+# logs folder
+logs/

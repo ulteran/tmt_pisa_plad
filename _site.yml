@@ -1,0 +1,12 @@
+name: "cars"
+output_dir: "docs"
+navbar:
+  title: "Cars"
+  left:
+  - text: "Home"
+    href: index.html
+  - text: "tmt_default"
+    href: tmt_default.html
+output:
+  html_document:
+    theme: cosmo

@@ -27,7 +27,7 @@ cells_comparison_results <- cells_comparison_results %>%
     )
   )
 
-cells_comparison_results %>% 
+g <- cells_comparison_results %>% 
   ggplot(aes(
     x = log2FC,
     y = -log10(pvalue),
@@ -37,5 +37,7 @@ cells_comparison_results %>%
   geom_point() +
   scale_colour_identity() +
   geom_text_repel(size = 3, force_pull = 5)
+
+ggplotly(g)
 ```
 

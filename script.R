@@ -2,6 +2,7 @@
 library(MSstatsTMT)
 library(tidyverse)
 library(ggrepel)
+library(plotly)
 # ---- data attaching ----
 proteinGroups <- read.table(
   "data/default/proteinGroups.txt", sep="\t", header=TRUE
@@ -64,36 +65,3 @@ cells_comparison <- groupComparisonTMT(
 )
 
 head(cells_comparison$ComparisonResult)
-
-cells_comparison_results <- cells_comparison$ComparisonResult
-
-cells_comparison_results <- left_join(
-  cells_comparison_results,
-  select(evidence, Proteins, Gene.names),
-  by = c("Protein" = "Proteins")
-) %>% distinct()
-
-cells_comparison_results <- cells_comparison_results %>% 
-  dplyr::mutate(
-    color = case_when(
-      pvalue < 0.01 & log2FC > 0 ~ "#488f31",
-      pvalue < 0.01 & log2FC < 0 ~ "#de425b",
-      pvalue < 0.05 & log2FC > 0 ~ "#a8c162",
-      pvalue < 0.05 & log2FC < 0 ~ "#f9a160",
-      TRUE ~ "grey"
-    ),
-    label = case_when(
-      pvalue < 0.05 ~ paste(Gene.names, Protein, sep = "\n")
-    )
-  )
-
-cells_comparison_results %>% 
-  ggplot(aes(
-    x = log2FC,
-    y = -log10(pvalue),
-    color = color,
-    label = label
-  )) +
-  geom_point() +
-  scale_colour_identity() +
-  geom_text_repel(size = 3, force_pull = 5)

@@ -12,9 +12,7 @@ cells_comparison_results <- left_join(
   select(evidence, Proteins, Gene.names),
   by = c("Protein" = "Proteins")
 ) %>% distinct()
-```
 
-```{r}
 cells_comparison_results <- cells_comparison_results %>% 
   dplyr::mutate(
     color = case_when(
@@ -40,3 +38,4 @@ cells_comparison_results %>%
   scale_colour_identity() +
   geom_text_repel(size = 3, force_pull = 5)
 ```
+

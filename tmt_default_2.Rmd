@@ -3,7 +3,7 @@ title: "tmt_default"
 author: "A.G."
 date: "`r Sys.Date()`"
 ---
-```{r include=FALSE}
+```{r echo=FALSE, warning=FALSE}
 cells_comparison_results <- cells_comparison$ComparisonResult
 
 cells_comparison_results <- left_join(
@@ -40,7 +40,7 @@ cells_comparison_results %>%
   geom_text_repel(size = 3, force_pull = 5)
 ```
 
-```{r include=FALSE}
+```{r echo=FALSE, warning=FALSE}
 reverselog_trans <- function(base = exp(1)) {
     trans <- function(x) -log(x, base)
     inv <- function(x) base^(-x)
@@ -67,6 +67,7 @@ cells_comparison_results %>%
     limits = c(1, 1e-08)
   ) +
   ggthemes::theme_base() +
+  theme(plot.background = element_rect(color = "white")) +
   geom_text_repel(
     size = 3,
     data          = subset(cells_comparison_results, log2FC > 0),

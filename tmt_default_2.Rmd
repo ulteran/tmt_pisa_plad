@@ -3,8 +3,7 @@ title: "tmt_default"
 author: "A.G."
 date: "`r Sys.Date()`"
 ---
-
-```{r}
+```{r include=FALSE}
 cells_comparison_results <- cells_comparison$ComparisonResult
 
 cells_comparison_results <- left_join(
@@ -27,7 +26,7 @@ cells_comparison_results <- cells_comparison_results %>%
     )
   )
 
-paste(Gene.names, Protein, sep = "\n")
+#paste(Gene.names, Protein, sep = "\n")
 
 cells_comparison_results %>% 
   ggplot(aes(
@@ -40,7 +39,8 @@ cells_comparison_results %>%
   scale_colour_identity() +
   geom_text_repel(size = 3, force_pull = 5)
 ```
-```{r}
+
+```{r include=FALSE}
 reverselog_trans <- function(base = exp(1)) {
     trans <- function(x) -log(x, base)
     inv <- function(x) base^(-x)

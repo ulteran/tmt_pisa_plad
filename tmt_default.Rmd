@@ -23,11 +23,13 @@ cells_comparison_results <- cells_comparison_results %>%
       TRUE ~ "grey"
     ),
     label = case_when(
-      pvalue < 0.05 ~ paste(Gene.names, Protein, sep = "\n")
+      pvalue < 0.01 ~ Gene.names
     )
   )
 
-g <- cells_comparison_results %>% 
+paste(Gene.names, Protein, sep = "\n")
+
+cells_comparison_results %>% 
   ggplot(aes(
     x = log2FC,
     y = -log10(pvalue),
@@ -37,7 +39,49 @@ g <- cells_comparison_results %>%
   geom_point() +
   scale_colour_identity() +
   geom_text_repel(size = 3, force_pull = 5)
+```
+```{r}
+reverselog_trans <- function(base = exp(1)) {
+    trans <- function(x) -log(x, base)
+    inv <- function(x) base^(-x)
+    trans_new(paste0("reverselog-", format(base)), trans, inv, 
+              log_breaks(base = base), 
+              domain = c(1e-100, Inf))
+}
+# Custom transformation
 
-ggplotly(g)
+cells_comparison_results %>% 
+  ggplot(aes(
+    x = log2FC,
+    y = pvalue,
+    color = color,
+    label = label
+  )) +
+  geom_point() +
+  scale_colour_identity() +
+  scale_y_continuous(
+    name = "p-value",
+    labels = label_math(expr = .x),
+    trans = reverselog_trans(10),
+    breaks = c(1, 0.05, 0.01, 0.001, 1e-04, 1e-05, 1e-06, 1e-07, 1e-08),
+    limits = c(1, 1e-08)
+  ) +
+  ggthemes::theme_base() +
+  geom_text_repel(
+    size = 3,
+    data          = subset(cells_comparison_results, log2FC > 0),
+    nudge_x       = 0.6 - subset(cells_comparison_results, log2FC > 0)$log2FC,
+    segment.size  = 0.2,
+    direction     = "y",
+    hjust         = 0
+  ) +
+  geom_text_repel(
+    size = 3,
+    data          = subset(cells_comparison_results, log2FC < 0),
+    nudge_x       = -0.8 - subset(cells_comparison_results, log2FC < 0)$log2FC,
+    segment.size  = 0.1,
+    direction     = "y",
+    hjust         = 1
+  )
 ```
 

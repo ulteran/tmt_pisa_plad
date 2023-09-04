@@ -5,8 +5,8 @@ navbar:
   left:
   - text: "Home"
     href: index.html
-  - text: "tmt_default"
-    href: tmt_default_2.html
+  - text: "Volcano plots"
+    href: volcano.html
 output:
   html_document:
     theme: cosmo

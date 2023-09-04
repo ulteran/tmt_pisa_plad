@@ -67,7 +67,13 @@ cells_comparison_results %>%
     limits = c(1, 1e-08)
   ) +
   ggthemes::theme_base() +
-  theme(plot.background = element_rect(color = "white")) +
+  theme(
+    plot.background = element_rect(color = NA),
+    text=element_text(size=16, family="sans")
+  ) +
+  xlab(
+    bquote(log[2]("fold change")~"cells Pl-B vs DMSO")
+  ) +
   geom_text_repel(
     size = 3,
     data          = subset(cells_comparison_results, log2FC > 0),
@@ -84,5 +90,8 @@ cells_comparison_results %>%
     direction     = "y",
     hjust         = 1
   )
+```
+```{r}
+plot(Hierar_cl)
 ```
 

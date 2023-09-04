@@ -67,9 +67,3 @@ cells_comparison <- groupComparisonTMT(
 )
 
 head(cells_comparison$ComparisonResult)
-
-#dataProcessPlotsTMT(data=quant_msstats,
-#                    type='ProfilePlot', # choice of visualization
-#                    width = 21,
-#                    height = 7,
-#                    which.Protein = 'P29279')

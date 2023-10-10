@@ -1,12 +1,14 @@
-name: "cars"
+name: "PISA nPladienolide-B"
 output_dir: "docs"
 navbar:
-  title: "Cars"
+  title: "PISA\nPladienolide-B"
   left:
   - text: "Home"
     href: index.html
   - text: "Volcano plots"
     href: volcano.html
+  - text: "Test"
+    href: test.html
 output:
   html_document:
     theme: cosmo

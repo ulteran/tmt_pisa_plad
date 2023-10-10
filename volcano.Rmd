@@ -4,25 +4,30 @@ author: "A.G."
 date: "`r Sys.Date()`"
 ---
 ```{r echo=FALSE, warning=FALSE}
-cells_comparison_results <- cells_comparison$ComparisonResult
+
+library(janitor)
+
+cells_comparison_results <- cells_comparison$ComparisonResult %>% 
+  clean_names()
 
 cells_comparison_results <- left_join(
   cells_comparison_results,
-  select(evidence, Proteins, Gene.names),
-  by = c("Protein" = "Proteins")
-) %>% distinct()
+  select(evidence, "Proteins", "Gene names"),
+  by = c("protein" = "Proteins")
+) %>% distinct() %>% 
+  clean_names()
 
 cells_comparison_results <- cells_comparison_results %>% 
   dplyr::mutate(
     color = case_when(
-      pvalue < 0.01 & log2FC > 0 ~ "#488f31",
-      pvalue < 0.01 & log2FC < 0 ~ "#de425b",
-      pvalue < 0.05 & log2FC > 0 ~ "#a8c162",
-      pvalue < 0.05 & log2FC < 0 ~ "#f9a160",
+      pvalue < 0.01 & log2fc > 0 ~ "#488f31",
+      pvalue < 0.01 & log2fc < 0 ~ "#de425b",
+      pvalue < 0.05 & log2fc > 0 ~ "#a8c162",
+      pvalue < 0.05 & log2fc < 0 ~ "#f9a160",
       TRUE ~ "grey"
     ),
     label = case_when(
-      pvalue < 0.01 ~ Gene.names
+      pvalue < 0.01 ~ gene_names
     )
   )
 
@@ -52,7 +57,7 @@ reverselog_trans <- function(base = exp(1)) {
 
 cells_comparison_results %>% 
   ggplot(aes(
-    x = log2FC,
+    x = log2fc,
     y = pvalue,
     color = color,
     label = label
@@ -66,29 +71,32 @@ cells_comparison_results %>%
     breaks = c(1, 0.05, 0.01, 0.001, 1e-04, 1e-05, 1e-06, 1e-07, 1e-08),
     limits = c(1, 1e-08)
   ) +
-  ggthemes::theme_base() +
+  ggthemes::theme_base(
+    base_size = 12, base_family = "googlesans_regular"
+  ) +
   theme(
-    plot.background = element_rect(color = NA),
-    text=element_text(size=16, family="sans")
+    plot.background = element_rect(color = NA)
   ) +
   xlab(
-    bquote(log[2]("fold change")~"cells Pl-B vs DMSO")
+    bquote(log[2]("fold change"))
   ) +
   geom_text_repel(
     size = 3,
-    data          = subset(cells_comparison_results, log2FC > 0),
-    nudge_x       = 0.6 - subset(cells_comparison_results, log2FC > 0)$log2FC,
+    data          = subset(cells_comparison_results, log2fc > 0),
+    nudge_x       = 0.6 - subset(cells_comparison_results, log2fc > 0)$log2fc,
     segment.size  = 0.2,
     direction     = "y",
-    hjust         = 0
+    hjust         = 0,
+    family = "googlesans_regular"
   ) +
   geom_text_repel(
     size = 3,
-    data          = subset(cells_comparison_results, log2FC < 0),
-    nudge_x       = -0.8 - subset(cells_comparison_results, log2FC < 0)$log2FC,
+    data          = subset(cells_comparison_results, log2fc < 0),
+    nudge_x       = -0.8 - subset(cells_comparison_results, log2fc < 0)$log2fc,
     segment.size  = 0.1,
     direction     = "y",
-    hjust         = 1
+    hjust         = 1,
+    family = "googlesans_regular"
   )
 ```
 ```{r}

@@ -12,7 +12,7 @@ FeatureLevelData_df_wide <- FeatureLevelData_df %>%
 FeatureLevelData_df_wide_pca <- FeatureLevelData_df_wide %>% 
   remove_rownames() %>% 
   column_to_rownames(var = "Channel") %>% 
-  select(!Condition) %>% 
+  select(!Condition) 
   select_if(~ !any(is.na(.)))
 
 FeatureLevelData_df_wide_pca <- FeatureLevelData_df_wide_pca[ , colSums(is.na(FeatureLevelData_df_wide_pca))==0]
@@ -37,6 +37,9 @@ FeatureLevelData_df_wide <- FeatureLevelData_df %>%
 
 FeatureLevelData_df %>% ggplot(aes(x = Channel, y = log2Intensity)) +
   geom_violin()
+
+FeatureLevelData_df_wide_pca_mod <- FeatureLevelData_df_wide_pca %>% 
+  filter(row.names(FeatureLevelData_df_wide_pca) %in% c("channel1"))
 
 
 pca_result <- FeatureLevelData_df_wide[, 2:17] %>% 
@@ -83,4 +86,4 @@ dataProcessPlotsTMT(data=quant_msstats,
                     type='ProfilePlot', # choice of visualization
                     width = 21,
                     height = 7,
-                    which.Protein = 'O75533') 
+                    which.Protein = 'P29279')

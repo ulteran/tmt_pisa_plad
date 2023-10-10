@@ -5,6 +5,7 @@ library(ggrepel)
 library(plotly)
 library(scales)
 library(ggthemes)
+library(data.table)
 # ---- data attaching ----
 proteinGroups <- read.table(
   "data/default/proteinGroups.txt", sep="\t", header=TRUE
@@ -25,10 +26,8 @@ input_mq <- MaxQtoMSstatsTMTFormat(
   use_log_file=T,
   append=T,
   verbose=T,
-  log_file_path = "logs/MSstats.log"
+  log_file_path="logs/MSstats.log"
 )
-
-input_mq_df <- as.data.frame(input_mq)
 
 quant_msstats <- proteinSummarization(
   data = input_mq_df,

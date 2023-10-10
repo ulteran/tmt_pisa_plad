@@ -46,14 +46,6 @@ cells_comparison_results %>%
 ```
 
 ```{r echo=FALSE, warning=FALSE}
-reverselog_trans <- function(base = exp(1)) {
-    trans <- function(x) -log(x, base)
-    inv <- function(x) base^(-x)
-    trans_new(paste0("reverselog-", format(base)), trans, inv, 
-              log_breaks(base = base), 
-              domain = c(1e-100, Inf))
-}
-# Custom transformation
 
 cells_comparison_results %>% 
   ggplot(aes(
@@ -67,7 +59,7 @@ cells_comparison_results %>%
   scale_y_continuous(
     name = "p-value",
     labels = label_math(expr = .x),
-    trans = reverselog_trans(10),
+    trans = custom_reverse_log_trans(10),
     breaks = c(1, 0.05, 0.01, 0.001, 1e-04, 1e-05, 1e-06, 1e-07, 1e-08),
     limits = c(1, 1e-08)
   ) +

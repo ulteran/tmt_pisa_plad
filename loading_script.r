@@ -65,10 +65,11 @@ if (
     evidence, 
     proteinGroups, 
     annotation,
-    use_log_file=T,
-    append=T,
-    verbose=T,
-    log_file_path="logs/MSstats.log"
+    which.proteinid = "Leading.razor.proteins",
+    use_log_file = TRUE,
+    append = TRUE,
+    verbose = TRUE,
+    log_file_path = "logs/MSstats.log"
   )
   
   fwrite(input_mq, file = "data/default/std_input_mq")
@@ -82,6 +83,8 @@ if (
 }
 
 input_mq_df <- as.data.frame(input_mq)
+
+head(input_mq_df)
 
 
 # ---- protein summarization ----
@@ -116,14 +119,16 @@ quant_msstats_merged <- list(
 )
 
 # ---- samples comparison ----
-# Check the conditions in the protein level data
+
 sample_types <- levels(quant_msstats$ProteinLevelData$Condition)
-# Only compare condition 0.125 and 1
+
 cells_comparison_matrix <- matrix(c(-1, 1, 0, 0), nrow = 1)
-# Set the names of each row
-row.names(cells_comparison_matrix) <- "cells_DMSO_vs_PlB"
-# Set the column names
+
+row.names(cells_comparison_matrix) <- "cells_DMSO_vs_Pld-B"
+
 colnames(cells_comparison_matrix) <- sample_types
+
+cells_comparison_matrix
 
 cells_comparison <- groupComparisonTMT(
   data = quant_msstats,
@@ -136,27 +141,17 @@ cells_comparison <- groupComparisonTMT(
   log_file_path = "logs/MSstats.log"
 )
 
-head(cells_comparison$ComparisonResult)
-
 cells_comparison_results <- cells_comparison$ComparisonResult
+
+view(cells_comparison_results)
 
 fwrite(
   cells_comparison_results, 
   file = "data/default/std_cells_comparison_results.csv"
 )
 
-dataProcessPlotsTMT(data=quant_msstats,
+dataProcessPlotsTMT(data = quant_msstats,
                     type = 'ProfilePlot', # choice of visualization
                     width = 21,
                     height = 7,
-                    which.Protein = 'Q13268') 
-
-df <- cells_comparison_results %>% 
-  dplyr::filter(
-    pvalue < 0.05
-  )
-
-googlesheets4::write_sheet(
-  df,
-  ss = "15uju3OURyXCH4ChNIhtnFjx5ysGk08keU1xID-m8N8M"
-)
+                    which.Protein = 'Q13268')

@@ -50,6 +50,8 @@ cells_comparison_results %>%
 
 ```{r echo=FALSE, warning=FALSE}
 
+pvalueBreaks <- function()
+
 cells_comparison_results %>% 
   ggplot(aes(
     x = log2fc,

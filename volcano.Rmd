@@ -50,7 +50,16 @@ cells_comparison_results %>%
 
 ```{r echo=FALSE, warning=FALSE}
 
-pvalueBreaks <- function()
+breaksRange <- function(data, col) {
+  breaks <- c(1, 0.05, 0.01)
+  i <- length(breaks)
+  while (breaks[i] > min(data$col)) {
+    append(breaks, breaks[i]/10)
+    i = i + 1
+  }
+}
+
+breaksRange(cells_comparison_results, pvalue)
 
 cells_comparison_results %>% 
   ggplot(aes(

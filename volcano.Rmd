@@ -5,14 +5,12 @@ date: "`r Sys.Date()`"
 ---
 ```{r echo=FALSE, warning=FALSE}
 
-library(janitor)
-
 cells_comparison_results <- cells_comparison$ComparisonResult %>% 
   clean_names()
 
 cells_comparison_results <- left_join(
   cells_comparison_results,
-  select(evidence, "Proteins", "Gene names"),
+  select(evidence, "Proteins", "Gene.names"),
   by = c("protein" = "Proteins")
 ) %>% distinct() %>% 
   clean_names()
@@ -29,6 +27,11 @@ cells_comparison_results <- cells_comparison_results %>%
     label = case_when(
       pvalue < 0.01 ~ gene_names
     )
+  )
+
+cells_comparison_results <- cells_comparison_results %>% 
+  dplyr::mutate(
+    minus_log10_adj_pvalue = -log10(adj_pvalue)
   )
 
 #paste(Gene.names, Protein, sep = "\n")
@@ -51,45 +54,35 @@ cells_comparison_results %>%
   ggplot(aes(
     x = log2fc,
     y = pvalue,
-    color = color,
-    label = label
+    label = label,
+    color = adj_pvalue
   )) +
   geom_point() +
-  scale_colour_identity() +
   scale_y_continuous(
-    name = "p-value",
     labels = label_math(expr = .x),
     trans = custom_reverse_log_trans(10),
-    breaks = c(1, 0.05, 0.01, 0.001, 1e-04, 1e-05, 1e-06, 1e-07, 1e-08),
-    limits = c(1, 1e-08)
+    breaks = c(1, 0.05, 0.01, 0.001, 1e-04, 1e-05, 1e-06, 1e-07, 1e-08, 1e-09, 1e-10),
+    limits = c(1, 1e-10)
   ) +
   ggthemes::theme_base(
-    base_size = 12, base_family = "googlesans_regular"
+#    base_size = 12, 
+    base_family = "googlesans_regular"
   ) +
-  theme(
-    plot.background = element_rect(color = NA)
-  ) +
-  xlab(
-    bquote(log[2]("fold change"))
-  ) +
+  theme(plot.background = element_rect(color = NA)) +
+  xlab(bquote(Delta*S)) +
+  ylab(bquote(italic(p)*-value)) +
   geom_text_repel(
-    size = 3,
-    data          = subset(cells_comparison_results, log2fc > 0),
-    nudge_x       = 0.6 - subset(cells_comparison_results, log2fc > 0)$log2fc,
-    segment.size  = 0.2,
-    direction     = "y",
-    hjust         = 0,
-    family = "googlesans_regular"
+    family = "googlesans_regular",
+    box.padding = 0.25,
+    max.overlaps = 15
   ) +
-  geom_text_repel(
-    size = 3,
-    data          = subset(cells_comparison_results, log2fc < 0),
-    nudge_x       = -0.8 - subset(cells_comparison_results, log2fc < 0)$log2fc,
-    segment.size  = 0.1,
-    direction     = "y",
-    hjust         = 1,
-    family = "googlesans_regular"
+  scale_color_gradientn(
+    colors = c("black", "red", "blue"),
+    limits = c(1, 0),
+    breaks = c(0, 0.05, 0.1, 0.25, 0.5, 1),
+    trans = "reverse"
   )
+
 ```
 ```{r}
 plot(Hierar_cl)

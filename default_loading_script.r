@@ -9,6 +9,8 @@ library(ggthemes)
 library(data.table)
 library(utils)
 library(extrafont)
+library(googlesheets4)
+library(janitor)
 
 #---- utils script ----
 
@@ -150,8 +152,27 @@ fwrite(
   file = "data/default/std_cells_comparison_results.csv"
 )
 
+cells_comparison_results <- fread(
+  "data/default/std_cells_comparison_results.csv"
+)
+
+cells_comparison_results <- cells_comparison_results %>% 
+  clean_names()
+
+cells_comparison_results <- left_join(
+  cells_comparison_results,
+  select(evidence, "Proteins", "Gene names"),
+  by = c("protein" = "Proteins")
+) %>% distinct() %>% 
+  clean_names()
+
+write_sheet(
+  cells_comparison_results,
+  "1XhzW9TKQUCg2WdSibhzGb4Mx6ydbXwgxCRWXy1tdhvE"
+)
+
 dataProcessPlotsTMT(data = quant_msstats,
                     type = 'ProfilePlot', # choice of visualization
-                    width = 21,
-                    height = 7,
-                    which.Protein = 'Q13268')
+                    width = 5,
+                    height = 5,
+                    which.Protein = 'Q9UII2')

@@ -8,6 +8,9 @@ date: "`r Sys.Date()`"
 cells_comparison_results <- cells_comparison$ComparisonResult %>% 
   clean_names()
 
+cells_comparison_results <- cells_comparison_results %>% 
+  janitor::clean_names()
+
 cells_comparison_results <- left_join(
   cells_comparison_results,
   select(evidence, "Proteins", "Gene.names"),
@@ -50,16 +53,17 @@ cells_comparison_results %>%
 
 ```{r echo=FALSE, warning=FALSE}
 
-breaksRange <- function(data, col) {
+breaksRange <- function(data) {
   breaks <- c(1, 0.05, 0.01)
   i <- length(breaks)
-  while (breaks[i] > min(data$col)) {
-    append(breaks, breaks[i]/10)
-    i = i + 1
+  while (breaks[i] > min(data$pvalue)) {
+    breaks <- append(breaks, breaks[i] / 10)
+    i <- i + 1
   }
+  return(breaks)
 }
 
-breaksRange(cells_comparison_results, pvalue)
+breaks <- breaksRange(cells_comparison_results)
 
 cells_comparison_results %>% 
   ggplot(aes(
@@ -72,7 +76,7 @@ cells_comparison_results %>%
   scale_y_continuous(
     labels = label_math(expr = .x),
     trans = custom_reverse_log_trans(10),
-    breaks = c(1, 0.05, 0.01, 0.001, 1e-04, 1e-05, 1e-06, 1e-07, 1e-08, 1e-09, 1e-10),
+    breaks = breaks,
     limits = c(1, 1e-10)
   ) +
   ggthemes::theme_base(
